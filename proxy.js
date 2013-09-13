@@ -12,13 +12,11 @@ var upstreamConnection;
 
 setInterval(function() {
   if (!upstreamConnection) {
-//  try {
-    upstreamConnection = net.connect({port: 8222}, function() {
-    console.log("Connected");
-//      console.log('connected')
-      });
+    upstreamConnection = net.connect({port: 8222})
+    upstreamConnection.on('error', function () {
+      upstreamConnection = null;
+    })
   };
-//  } catch (e) {console.log('hi')};
 },1000);
 
 setInterval(function() {
