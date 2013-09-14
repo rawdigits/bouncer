@@ -26,7 +26,7 @@ function commandDo(cmd) {
   console.log(cmd);
 }
 
-
+//This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection) {
     upstreamConnection = net.connect({port: 8222});
@@ -44,7 +44,6 @@ setInterval(function() {
     //upstreamConnection.write("TEST\n");
     console.log(assholes);
   } catch (e) {};
-
 },2000);
 
 
@@ -52,4 +51,5 @@ setInterval(function() {
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
+  upstreamConnection.write("!!!!\n");
 }).listen(8080);
