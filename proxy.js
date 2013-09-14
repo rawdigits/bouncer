@@ -11,18 +11,19 @@ var upstreamConnection;
 var assholes = {};
 
 
-function commandDo(cmd, assholes) {
+function commandDo(cmd) {
   cmd = cmd.toString().trim().toLowerCase();
   if (/block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
     assholes[cmd[0]] = cmd[1];
     console.log(cmd);
   } else if (cmd == "clear") {
-    assholes = {};
     console.log("Clearing stored list.");
+    return assholes = {};
   } else if (cmd == "show") {
     console.log(assholes);
   };
+  console.log(cmd);
 }
 
 
@@ -30,7 +31,7 @@ setInterval(function() {
   if (!upstreamConnection) {
     upstreamConnection = net.connect({port: 8222});
     upstreamConnection.on('data', function(data) {
-      commandDo(data, assholes);
+      commandDo(data);
     });
     upstreamConnection.on('error', function () {
       upstreamConnection = null;
@@ -41,6 +42,7 @@ setInterval(function() {
 setInterval(function() {
   try {
     //upstreamConnection.write("TEST\n");
+    console.log(assholes);
   } catch (e) {};
 
 },2000);
