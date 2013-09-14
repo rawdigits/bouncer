@@ -2,6 +2,7 @@
 
 var http = require('http');
 var httpProxy = require('http-proxy');
+var uuid = require('uuid');
 var net = require('net');
 
 //CONSTANTS
@@ -27,10 +28,11 @@ function commandDo(cmd) {
   console.log(cmd);
 }
 
-function buildMessage(req) {
+function buildMessage(req, uuid) {
   message = {};
   message.host    = req.socket.remoteAddress;
   message.headers = req.headers;
+  message.uuid    = uuid;
   return JSON.stringify(message);
 }
 
@@ -57,6 +59,7 @@ setInterval(function() {
 http.createServer(function(req, res) {
   res.end('hello world\n');
 //  try {
-    upstreamConnection.write(buildMessage(req));
+  id = uuid.v4();
+    upstreamConnection.write(buildMessage(req, id));
 //  } catch (e) {}
 }).listen(8080);
