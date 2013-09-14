@@ -7,6 +7,7 @@ var net = require('net');
 //CONSTANTS
 var UPSTREAM_LOGSERVER = process.argv[2];
 
+//GLOBALs
 var upstreamConnection;
 var assholes = {};
 
@@ -29,7 +30,7 @@ function commandDo(cmd) {
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection) {
-    upstreamConnection = net.connect({port: 8222});
+    upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 8222});
     upstreamConnection.on('data', function(data) {
       commandDo(data);
     });
