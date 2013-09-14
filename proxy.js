@@ -11,7 +11,7 @@ var UPSTREAM_LOGSERVER = process.argv[2];
 var upstreamConnection;
 var assholes = {};
 
-
+//Incoming commands from upstream server
 function commandDo(cmd) {
   cmd = cmd.toString().trim().toLowerCase();
   if (/block.*/.test(cmd)) {
@@ -51,5 +51,7 @@ setInterval(function() {
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
-  upstreamConnection.write(JSON.stringify(req.headers));
+  try {
+    upstreamConnection.write(JSON.stringify(req.headers));
+  } catch (e) {}
 }).listen(8080);
