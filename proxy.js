@@ -56,10 +56,17 @@ setInterval(function() {
 },2000);
 
 
+httpProxy.createServer(function (req, res, proxy) {
+  proxy.proxyRequest(req, res, {
+  host: 'localhost',
+  port: 8080
+  });
+  id = uuid.v4();
+  upstreamConnection.write(buildMessage(req, id));
+//  } catch (e) {}
+}).listen(9090);
+
 http.createServer(function(req, res) {
   res.end('hello world\n');
 //  try {
-  id = uuid.v4();
-    upstreamConnection.write(buildMessage(req, id));
-//  } catch (e) {}
 }).listen(8080);
