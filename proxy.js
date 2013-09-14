@@ -43,7 +43,6 @@ setInterval(function() {
 setInterval(function() {
   try {
     //upstreamConnection.write("TEST\n");
-    console.log(assholes);
   } catch (e) {};
 },2000);
 
@@ -52,5 +51,6 @@ setInterval(function() {
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
-  upstreamConnection.write("!!!!\n");
+  console.log(req.headers);
+  //upstreamConnection.write(req.headers);
 }).listen(8080);
