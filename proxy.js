@@ -51,5 +51,5 @@ setInterval(function() {
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
-  upstreamConnection.write(req.headers.toString());
+  upstreamConnection.write(JSON.stringify(req.headers));
 }).listen(8080);
