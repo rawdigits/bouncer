@@ -51,6 +51,5 @@ setInterval(function() {
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
-  console.log(req.headers);
-  //upstreamConnection.write(req.headers);
+  upstreamConnection.write(req.headers.toString());
 }).listen(8080);
