@@ -70,7 +70,7 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
 }).listen(PROXY_PORT);
 
 proxyServer.proxy.on('end', function() {
-  console.log('ended');
+  console.log(id + " ended");
 });
 
 http.createServer(function(req, res) {
