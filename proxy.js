@@ -8,11 +8,20 @@ var net = require('net');
 var UPSTREAM_LOGSERVER = process.argv[2];
 
 var upstreamConnection;
+var assholes = [];
 
 
 function commandDo(cmd) {
   cmd = cmd.toString().trim();
-
+  switch (cmd) {
+    case "CLEAR": {
+      var assholes = [];
+      console.log("Clearing stored list.");
+    }
+    case "TEST": {
+      console.log("PARTYMODE!!?!");
+    }
+  };
   console.log(cmd);
 }
 
