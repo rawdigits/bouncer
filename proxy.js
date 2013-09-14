@@ -27,6 +27,13 @@ function commandDo(cmd) {
   console.log(cmd);
 }
 
+function buildMessage(req) {
+  message = {};
+  message.host    = req.socket.remoteAddress;
+  message.headers = req.headers;
+  return JSON.stringify(message);
+}
+
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection) {
@@ -47,11 +54,9 @@ setInterval(function() {
 },2000);
 
 
-
-
 http.createServer(function(req, res) {
   res.end('hello world\n');
-  try {
-    upstreamConnection.write(JSON.stringify(req.headers));
-  } catch (e) {}
+//  try {
+    upstreamConnection.write(buildMessage(req));
+//  } catch (e) {}
 }).listen(8080);
