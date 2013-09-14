@@ -11,21 +11,18 @@ var upstreamConnection;
 var assholes = {};
 
 
-function commandDo(cmd) {
+function commandDo(cmd, assholes) {
   cmd = cmd.toString().trim().toLowerCase();
   if (/block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
-
+    assholes[cmd[0]] = cmd[1];
     console.log(cmd);
   } else if (cmd == "clear") {
-    var assholes = {};
+    assholes = {};
     console.log("Clearing stored list.");
-  } else if (cmd == "test") {
-    console.log("PARTYMODE!!?!");
   } else if (cmd == "show") {
     console.log(assholes);
   };
-  console.log(cmd);
 }
 
 
@@ -33,7 +30,7 @@ setInterval(function() {
   if (!upstreamConnection) {
     upstreamConnection = net.connect({port: 8222});
     upstreamConnection.on('data', function(data) {
-      commandDo(data);
+      commandDo(data, assholes);
     });
     upstreamConnection.on('error', function () {
       upstreamConnection = null;
