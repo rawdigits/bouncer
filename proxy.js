@@ -13,14 +13,13 @@ var assholes = [];
 
 function commandDo(cmd) {
   cmd = cmd.toString().trim();
-  switch (cmd) {
-    case "CLEAR": {
-      var assholes = [];
-      console.log("Clearing stored list.");
-    }
-    case "TEST": {
-      console.log("PARTYMODE!!?!");
-    }
+  if (/BLOCK.*/.test(cmd)) {
+    console.log("BLOCK em?");
+  } else if (cmd == "CLEAR") {
+    var assholes = [];
+    console.log("Clearing stored list.");
+  } else if (cmd == "TEST") {
+    console.log("PARTYMODE!!?!");
   };
   console.log(cmd);
 }
@@ -40,7 +39,7 @@ setInterval(function() {
 
 setInterval(function() {
   try {
-    upstreamConnection.write("TEST\n");
+    //upstreamConnection.write("TEST\n");
   } catch (e) {};
 
 },2000);
