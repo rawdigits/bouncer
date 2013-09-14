@@ -12,14 +12,17 @@ var assholes = [];
 
 
 function commandDo(cmd) {
-  cmd = cmd.toString().trim();
-  if (/BLOCK.*/.test(cmd)) {
-    console.log("BLOCK em?");
-  } else if (cmd == "CLEAR") {
+  cmd = cmd.toString().trim().toLowerCase();
+  if (/block.*/.test(cmd)) {
+    cmd = cmd.slice(6).split("|")
+    console.log(cmd);
+  } else if (cmd == "clear") {
     var assholes = [];
     console.log("Clearing stored list.");
-  } else if (cmd == "TEST") {
+  } else if (cmd == "test") {
     console.log("PARTYMODE!!?!");
+  } else if (cmd == "show") {
+    console.log(assholes);
   };
   console.log(cmd);
 }
