@@ -59,7 +59,7 @@ setInterval(function() {
 },1000);
 
 
-httpProxy.createServer(function (req, res, proxy) {
+proxyServer = httpProxy.createServer(function (req, res, proxy) {
   proxy.proxyRequest(req, res, {
   host: HTTP_SERVER,
   port: HTTP_PORT
@@ -68,6 +68,10 @@ httpProxy.createServer(function (req, res, proxy) {
   upstreamConnection.write(buildMessage(req, id));
 //  } catch (e) {}
 }).listen(PROXY_PORT);
+
+proxyServer.proxy.on('end', function() {
+  console.log('ended');
+});
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
