@@ -7,6 +7,9 @@ var net = require('net');
 
 //CONSTANTS
 var UPSTREAM_LOGSERVER = process.argv[2];
+var HTTP_SERVER = process.argv[3];
+var HTTP_PORT = process.argv[4];
+var PROXY_PORT = process.argv[5];
 
 //GLOBALs
 var upstreamConnection;
@@ -53,18 +56,18 @@ setInterval(function() {
   try {
     //upstreamConnection.write("TEST\n");
   } catch (e) {};
-},2000);
+},1000);
 
 
 httpProxy.createServer(function (req, res, proxy) {
   proxy.proxyRequest(req, res, {
-  host: 'localhost',
-  port: 8080
+  host: HTTP_SERVER,
+  port: HTTP_PORT
   });
   id = uuid.v4();
   upstreamConnection.write(buildMessage(req, id));
 //  } catch (e) {}
-}).listen(9090);
+}).listen(PROXY_PORT);
 
 http.createServer(function(req, res) {
   res.end('hello world\n');
