@@ -21,8 +21,9 @@ function commandDo(cmd) {
   cmd = cmd.toString().trim().toLowerCase();
   if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
-    assholes[cmd[0]] = cmd[1];
-    console.log(cmd);
+    timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
+    assholes[cmd[0]] = timeToBlock;
+    console.log(assholes);
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete assholes[cmd];
@@ -45,8 +46,16 @@ function buildMessage(req, uuid) {
 
 function checkRequest(req) {
   if (req.socket.remoteAddress in assholes) {
-    req.connection.end();
-    return false;
+    console.log('in assholes list..');
+    if (assholes[req.socket.remoteAddress] > new Date().getTime()) {
+      console.log(assholes[req.socket.remoteAddress]);
+      console.log(new Date().getTime());
+      req.connection.end();
+      return false;
+    } else {
+      delete assholes[req.socket.remoteAddress];
+      return true;
+    }
   } else {
     return true;
   }
@@ -62,8 +71,8 @@ setInterval(function() {
     upstreamConnection.on('data', function(data) {
       commandDo(data);
     });
+    //destroys upstream if the connection is dead
     upstreamConnection.on('error', function () {
-      //upstreamConnection = null;
     return upstreamConnection = null
     });
   };
