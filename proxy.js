@@ -23,17 +23,13 @@ function commandDo(cmd) {
     cmd = cmd.slice(6).split("|")
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     assholes[cmd[0]] = timeToBlock;
-    console.log(assholes);
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete assholes[cmd];
   } else if (cmd == "clear") {
-    console.log("Clearing stored list.");
     return assholes = {};
   } else if (cmd == "show") {
-    console.log(assholes);
   };
-  console.log(cmd);
 }
 
 function buildMessage(req, uuid) {
@@ -46,10 +42,9 @@ function buildMessage(req, uuid) {
 
 function checkRequest(req) {
   if (req.socket.remoteAddress in assholes) {
-    console.log('in assholes list..');
     if (assholes[req.socket.remoteAddress] > new Date().getTime()) {
-      console.log(assholes[req.socket.remoteAddress]);
-      console.log(new Date().getTime());
+      //console.log(assholes[req.socket.remoteAddress]);
+      //console.log(new Date().getTime());
       req.connection.end();
       return false;
     } else {
@@ -59,21 +54,22 @@ function checkRequest(req) {
   } else {
     return true;
   }
-  console.log(req.socket.remoteAddress);
+  //console.log(req.socket.remoteAddress);
 }
 
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection) {
+    console.log('creating upstream');
     upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 5555})
     //connect to aggregator in "server" mode
     upstreamConnection.write('S');
-    upstreamConnection.on('data', function(data) {
+    upstreamConnection.once('data', function(data) {
       commandDo(data);
     });
     //destroys upstream if the connection is dead
-    upstreamConnection.on('error', function () {
-    return upstreamConnection = null
+    upstreamConnection.once('error', function () {
+      return upstreamConnection = null
     });
   };
 },1000);
@@ -93,7 +89,6 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
     port: HTTP_PORT
     });
     id = uuid.v4();
-    console.log(id + " started");
     try {
     upstreamConnection.write(buildMessage(req, id));
     } catch (e) {}
@@ -101,5 +96,4 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
 }).listen(PROXY_PORT);
 
 proxyServer.proxy.on('end', function() {
-  console.log(id + " ended");
 });
