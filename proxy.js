@@ -44,7 +44,6 @@ function buildMessage(req, uuid) {
 }
 
 function checkRequest(req) {
-//  if (req.connection.remoteAddress == '10.0.10.150') {
   if (req.socket.remoteAddress in assholes) {
     req.connection.end();
     return false;
@@ -58,15 +57,14 @@ function checkRequest(req) {
 setInterval(function() {
   if (!upstreamConnection) {
     upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 5555})
+    //connect to aggregator in "server" mode
     upstreamConnection.write('S');
-    //upstreamConnection.on('connect', function(c) {
-    //  c.write('S');
-    //});
     upstreamConnection.on('data', function(data) {
       commandDo(data);
     });
     upstreamConnection.on('error', function () {
-      upstreamConnection = null;
+      //upstreamConnection = null;
+    return upstreamConnection = null
     });
   };
 },1000);
