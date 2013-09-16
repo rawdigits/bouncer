@@ -103,8 +103,3 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
 proxyServer.proxy.on('end', function() {
   console.log(id + " ended");
 });
-
-http.createServer(function(req, res) {
-  res.end('hello world\n');
-//  try {
-}).listen(8080);
