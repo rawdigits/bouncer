@@ -33,10 +33,12 @@ server = net.createServer(function(c) {
         clients.forEach(function (sock) {
           sock.write(data);
         })
-      } else {
+      } else if (clients.indexOf(c) > -1) {
         servers.forEach(function (sock) {
           sock.write(data);
         });
+      } else {
+        c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "\n");
       };
     };
   });
