@@ -19,10 +19,13 @@ var assholes = {};
 //Incoming commands from upstream server
 function commandDo(cmd) {
   cmd = cmd.toString().trim().toLowerCase();
-  if (/block.*/.test(cmd)) {
+  if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
     assholes[cmd[0]] = cmd[1];
     console.log(cmd);
+  } else if (/^unblock.*/.test(cmd)) {
+    cmd = cmd.slice(8)
+    delete assholes[cmd];
   } else if (cmd == "clear") {
     console.log("Clearing stored list.");
     return assholes = {};
