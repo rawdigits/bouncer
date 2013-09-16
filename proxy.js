@@ -10,6 +10,7 @@ var UPSTREAM_LOGSERVER = process.argv[2];
 var HTTP_SERVER = process.argv[3];
 var HTTP_PORT = process.argv[4];
 var PROXY_PORT = process.argv[5];
+//#TODO: add support for behind proxy
 
 //GLOBALs
 var upstreamConnection;
@@ -18,10 +19,13 @@ var assholes = {};
 //Incoming commands from upstream server
 function commandDo(cmd) {
   cmd = cmd.toString().trim().toLowerCase();
-  if (/block.*/.test(cmd)) {
+  if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
     assholes[cmd[0]] = cmd[1];
     console.log(cmd);
+  } else if (/^unblock.*/.test(cmd)) {
+    cmd = cmd.slice(8)
+    delete assholes[cmd];
   } else if (cmd == "clear") {
     console.log("Clearing stored list.");
     return assholes = {};
@@ -37,6 +41,17 @@ function buildMessage(req, uuid) {
   message.headers = req.headers;
   message.uuid    = uuid;
   return JSON.stringify(message);
+}
+
+function checkRequest(req) {
+//  if (req.connection.remoteAddress == '10.0.10.150') {
+  if (req.socket.remoteAddress in assholes) {
+    req.connection.end();
+    return false;
+  } else {
+    return true;
+  }
+  console.log(req.socket.remoteAddress);
 }
 
 //This connects to the aggregation server and accepts upstream commands.
@@ -60,15 +75,17 @@ setInterval(function() {
 
 
 proxyServer = httpProxy.createServer(function (req, res, proxy) {
-  proxy.proxyRequest(req, res, {
-  host: HTTP_SERVER,
-  port: HTTP_PORT
-  });
-  id = uuid.v4();
-  console.log(id + " started");
-  try {
-  upstreamConnection.write(buildMessage(req, id));
-  } catch (e) {}
+  if (checkRequest(req)) {
+    proxy.proxyRequest(req, res, {
+    host: HTTP_SERVER,
+    port: HTTP_PORT
+    });
+    id = uuid.v4();
+    console.log(id + " started");
+    try {
+    upstreamConnection.write(buildMessage(req, id));
+    } catch (e) {}
+  }
 }).listen(PROXY_PORT);
 
 proxyServer.proxy.on('end', function() {
