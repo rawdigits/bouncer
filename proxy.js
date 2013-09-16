@@ -87,7 +87,7 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
     });
     id = uuid.v4();
     try {
-    upstreamConnection.write(buildMessage(req, id));
+    upstreamConnection.write(buildMessage(req, id) + "\n");
     } catch (e) {}
   }
 }).listen(PROXY_PORT);

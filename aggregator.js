@@ -29,16 +29,21 @@ server = net.createServer(function(c) {
       clients.push(c);
       //console.log(clients.length);
     } else {
-      if (servers.indexOf(c) > -1) {
-        clients.forEach(function (sock) {
-          sock.write(data);
-        })
-      } else if (clients.indexOf(c) > -1) {
-        servers.forEach(function (sock) {
-          sock.write(data);
-        });
+      if (data.toString()[data.length-1] == '\n') {
+        if (servers.indexOf(c) > -1) {
+          clients.forEach(function (sock) {
+            sock.write(data);
+          })
+        } else if (clients.indexOf(c) > -1) {
+          servers.forEach(function (sock) {
+            sock.write(data);
+          });
+        } else {
+          c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "\n");
+        };
       } else {
-        c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "\n");
+        console.log ('incomplete data');
+        console.log(data.toString());
       };
     };
   });
