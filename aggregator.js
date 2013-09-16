@@ -29,10 +29,15 @@ server = net.createServer(function(c) {
       clients.push(c);
       //console.log(clients.length);
     } else {
-      clients.forEach(function (sock) {
-        sock.write(data);
-        //console.log(clients.length);
-      });
+      if (servers.indexOf(c) > -1) {
+        clients.forEach(function (sock) {
+          sock.write(data);
+        })
+      } else {
+        servers.forEach(function (sock) {
+          sock.write(data);
+        });
+      };
     };
   });
   c.on('end', function() {
