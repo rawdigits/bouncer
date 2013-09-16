@@ -5,23 +5,23 @@ var net = require('net');
 clients = []
 servers = []
 
-console.log(clients);
+//console.log(clients);
 
 function bye(c) {
  if (clients.indexOf(c) > -1) {
     index = clients.indexOf(c);
     clients.splice(index, 1);
-    console.log("Clients: " + clients.length);
+    //console.log("Clients: " + clients.length);
   } else if (servers.indexOf(c) > -1) {
     index = servers.indexOf(c);
     servers.splice(index, 1);
-    console.log("Servers: " + servers.length);
+    //console.log("Servers: " + servers.length);
   }
 };
 
 server = net.createServer(function(c) {
   c.on('data', function(data) {
-    console.log(data.toString().trim());
+    //console.log(data.toString().trim());
     if (data.toString().trim() == 'S') {
       servers.push(c);
       //console.log(servers.length);
@@ -41,16 +41,6 @@ server = net.createServer(function(c) {
   c.on('error', function() {
     c.end();
     bye(c);
-//    if (clients.indexOf(c) > -1) {
-//      index = clients.indexOf(c);
-//      clients.splice(index, 1);
-//      console.log("Clients: " + clients.length);
-//    } else if (servers.indexOf(c) > -1) {
-//      index = servers.indexOf(c);
-//      servers.splice(index, 1);
-//      console.log("Servers: " + servers.length);
-//    }
-    //socket.end();
   });
 
 });

@@ -57,7 +57,11 @@ function checkRequest(req) {
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection) {
-    upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 8222});
+    upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 5555})
+    upstreamConnection.write('S');
+    //upstreamConnection.on('connect', function(c) {
+    //  c.write('S');
+    //});
     upstreamConnection.on('data', function(data) {
       commandDo(data);
     });
