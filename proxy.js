@@ -35,6 +35,8 @@ function commandDo(cmd) {
 function buildMessage(req, uuid) {
   message = {};
   message.host    = req.socket.remoteAddress;
+  message.url     = req.url;
+  message.method  = req.method;
   message.headers = req.headers;
   message.uuid    = uuid;
   return JSON.stringify(message);
