@@ -68,9 +68,10 @@ setInterval(function() {
 },1000);
 
 setInterval(function() {
-  try {
+  //try {
+//    console.log(proxyServer.getConnections());
     //upstreamConnection.write("TEST\n");
-  } catch (e) {};
+  //} catch (e) {};
 },1000);
 
 
