@@ -111,6 +111,11 @@ proxyServer = http.createServer(function (req, res) {
   }
 }).listen(PROXY_PORT);
 
+proxyServer.on('request', function (req, res) {
+  console.log("good request");
+  reqs.splice(reqs.indexOf(req),1);
+});
+
 proxyServer.on('connection', function (req, c, h) {
   //mark the start time vs slow laris
   req.startTime = new Date().getTime();
