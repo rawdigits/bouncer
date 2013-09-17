@@ -25,7 +25,6 @@ server = net.createServer(function(c) {
     } else if (data.toString().trim() == 'C') {
       clients.push(c);
     } else if (data.toString().trim() == 'CO') {
-      console.log('commandy');
       commandOnlyClients.push(c);
     } else {
       if (data.toString()[data.length-1] == '\n') {
