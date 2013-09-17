@@ -40,8 +40,12 @@ server = net.createServer(function(c) {
           servers.forEach(function (sock) {
             sock.write(allData);
           });
+        } else if (commandOnlyClients.indexOf(c) > -1) {
+          servers.forEach(function (sock) {
+            sock.write(allData);
+          });
         } else {
-          c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "Command only Clients: " + commandOnlyClients.lentgh + "\n");
+          c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "Command only Clients: " + commandOnlyClients.length + "\n");
         };
       } else {
         oldData = oldData + data

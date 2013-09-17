@@ -33,7 +33,7 @@ function commandDo(cmd) {
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete assholes[cmd];
-  } else if (cmd == "clear") {
+  } else if (cmd == "flush") {
     return assholes = {};
   } else if (cmd == "kill") {
     cmd = cmd.slice(5)
@@ -54,6 +54,7 @@ function buildMessage(req, uuid) {
 function checkRequest(req) {
   if (req.socket.remoteAddress in assholes) {
     if (assholes[req.socket.remoteAddress] > new Date().getTime()) {
+      console.log('found asshole');
       req.connection.end();
       return false;
     } else {
