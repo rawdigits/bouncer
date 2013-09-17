@@ -15,6 +15,8 @@ var PROXY_PORT = process.argv[5];
 //GLOBALs
 var upstreamConnection;
 var assholes = {};
+var connections = [];
+var totalConnections = 0;
 
 //Incoming commands from upstream server
 function commandDo(cmd) {
@@ -28,7 +30,9 @@ function commandDo(cmd) {
     delete assholes[cmd];
   } else if (cmd == "clear") {
     return assholes = {};
-  } else if (cmd == "show") {
+  } else if (cmd == "kill") {
+    cmd = cmd.slice(5)
+    //connections
   };
 }
 
@@ -74,6 +78,9 @@ setInterval(function() {
 
 setInterval(function() {
   //try {
+//  console.log(connections.length);
+// console.log(connections);
+  console.log(totalConnections);
     //upstreamConnection.write("TEST\n");
   //} catch (e) {};
 },1000);
@@ -81,6 +88,8 @@ setInterval(function() {
 
 proxyServer = httpProxy.createServer(function (req, res, proxy) {
   if (checkRequest(req)) {
+    totalConnections += 1;
+    //connections.push(proxy);
     proxy.proxyRequest(req, res, {
     host: HTTP_SERVER,
     port: HTTP_PORT
@@ -92,5 +101,14 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
   }
 }).listen(PROXY_PORT);
 
-proxyServer.proxy.on('end', function() {
+proxyServer.proxy.on('error', function(proxy) {
+  totalConnections -= 1;
+  //c = connections.indexOf(proxy);
+  //connections.splice(c, 1);
+});
+
+proxyServer.proxy.on('end', function(proxy) {
+  totalConnections -= 1;
+  //c = connections.indexOf(proxy);
+  //connections.splice(c, 1);
 });
