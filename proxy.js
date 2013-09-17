@@ -17,7 +17,9 @@ var PROXY_PORT = process.argv[5];
 var upstreamConnection;
 var assholes = {};
 var connections = [];
+var reqs = [];
 var totalConnections = 0;
+var headerTimeout = 10000;
 
 process.setMaxListeners(0);
 
@@ -80,19 +82,24 @@ setInterval(function() {
 },1000);
 
 setInterval(function() {
-  //try {
-//  console.log(connections.length);
-// console.log(connections);
-  console.log(totalConnections);
-    //upstreamConnection.write("TEST\n");
-  //} catch (e) {};
+  reqs.forEach(function (req) {
+    if ((req.startTime + headerTimeout) < new Date().getTime()) {
+      reqs.splice(reqs.indexOf(req),1);
+      req.end();
+    };
+  });
+  console.log(reqs.length);
 },1000);
 
 
-proxyServer = httpProxy.createServer(function (req, res, proxy) {
+proxy = new httpProxy.RoutingProxy();
+//proxyServer = httpProxy.createServer(function (req, res, proxy) {
+proxyServer = http.createServer(function (req, res) {
+  //this important bit helps against slowloris
+  //console.log(req);
+  req.setTimeout(12000);
   if (checkRequest(req)) {
     totalConnections += 1;
-    connections.push(proxy);
     proxy.proxyRequest(req, res, {
     host: HTTP_SERVER,
     port: HTTP_PORT
@@ -104,13 +111,19 @@ proxyServer = httpProxy.createServer(function (req, res, proxy) {
   }
 }).listen(PROXY_PORT);
 
-proxyServer.proxy.on('error', function(proxy) {
+proxyServer.on('connection', function (req, c, h) {
+  //mark the start time vs slow laris
+  req.startTime = new Date().getTime();
+  reqs.push(req);
+});
+
+proxy.on('error', function(proxy) {
   totalConnections -= 1;
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
 });
 
-proxyServer.proxy.on('end', function(proxy) {
+proxy.on('end', function(proxy) {
   totalConnections -= 1;
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
