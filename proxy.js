@@ -1,6 +1,7 @@
 #!/usr/bin/node
 
 var http = require('http');
+http.globalAgent.maxSockets = 100000
 var httpProxy = require('http-proxy');
 var uuid = require('uuid');
 var net = require('net');
@@ -17,6 +18,8 @@ var upstreamConnection;
 var assholes = {};
 var connections = [];
 var totalConnections = 0;
+
+process.setMaxListeners(0);
 
 //Incoming commands from upstream server
 function commandDo(cmd) {
@@ -89,7 +92,7 @@ setInterval(function() {
 proxyServer = httpProxy.createServer(function (req, res, proxy) {
   if (checkRequest(req)) {
     totalConnections += 1;
-    //connections.push(proxy);
+    connections.push(proxy);
     proxy.proxyRequest(req, res, {
     host: HTTP_SERVER,
     port: HTTP_PORT
