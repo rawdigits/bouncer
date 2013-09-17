@@ -41,13 +41,21 @@ function commandDo(cmd) {
   };
 }
 
-function buildMessage(req, uuid) {
+function buildRequestMessage(req, uuid) {
   message = {};
+  message.type    = "request";
   message.host    = req.socket.remoteAddress;
   message.url     = req.url;
   message.method  = req.method;
   message.headers = req.headers;
   message.uuid    = uuid;
+  return JSON.stringify(message);
+}
+
+function buildConnectMessage(req) {
+  message = {};
+  message.type    = "connect";
+  message.host    = req.remoteAddress;
   return JSON.stringify(message);
 }
 
@@ -107,7 +115,7 @@ proxyServer = http.createServer(function (req, res) {
     });
     id = uuid.v4();
     try {
-    upstreamConnection.write(buildMessage(req, id) + "\n");
+    upstreamConnection.write(buildRequestMessage(req, id) + "\n");
     } catch (e) {}
   }
 }).listen(PROXY_PORT);
@@ -121,6 +129,9 @@ proxyServer.on('connection', function (req, c, h) {
   //mark the start time vs slow laris
   req.startTime = new Date().getTime();
   reqs.push(req);
+  try {
+    upstreamConnection.write(buildConnectMessage(req) + "\n");
+  } catch (e) {}
 });
 
 proxy.on('error', function(proxy) {
