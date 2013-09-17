@@ -88,7 +88,7 @@ setInterval(function() {
       req.end();
     };
   });
-  console.log(reqs.length);
+  //console.log(reqs.length);
 },1000);
 
 
@@ -112,7 +112,7 @@ proxyServer = http.createServer(function (req, res) {
 }).listen(PROXY_PORT);
 
 proxyServer.on('request', function (req, res) {
-  console.log("good request");
+  //remove good requests from garbage collection
   reqs.splice(reqs.indexOf(req),1);
 });
 
