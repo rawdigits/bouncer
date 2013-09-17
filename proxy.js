@@ -59,14 +59,12 @@ function buildConnectMessage(req) {
   return JSON.stringify(message);
 }
 
-function checkRequest(req) {
-  if (req.socket.remoteAddress in assholes) {
-    if (assholes[req.socket.remoteAddress] > new Date().getTime()) {
-      console.log('found asshole');
-      req.connection.end();
+function checkBlacklist(addr) {
+  if (addr in assholes) {
+    if (assholes[addr] > new Date().getTime()) {
       return false;
     } else {
-      delete assholes[req.socket.remoteAddress];
+      delete assholes[addr];
       return true;
     }
   } else {
@@ -107,7 +105,7 @@ proxyServer = http.createServer(function (req, res) {
   //this important bit helps against slowloris
   //console.log(req);
   req.setTimeout(12000);
-  if (checkRequest(req)) {
+  if (checkBlacklist(req.socket.remoteAddress)) {
     totalConnections += 1;
     proxy.proxyRequest(req, res, {
     host: HTTP_SERVER,
@@ -117,6 +115,8 @@ proxyServer = http.createServer(function (req, res) {
     try {
     upstreamConnection.write(buildRequestMessage(req, id) + "\n");
     } catch (e) {}
+  } else {
+    req.connection.end();
   }
 }).listen(PROXY_PORT);
 
@@ -127,11 +127,15 @@ proxyServer.on('request', function (req, res) {
 
 proxyServer.on('connection', function (req, c, h) {
   //mark the start time vs slow laris
-  req.startTime = new Date().getTime();
-  reqs.push(req);
-  try {
-    upstreamConnection.write(buildConnectMessage(req) + "\n");
-  } catch (e) {}
+  if (checkBlacklist(req.remoteAddress)) {
+    req.startTime = new Date().getTime();
+    reqs.push(req);
+    try {
+      upstreamConnection.write(buildConnectMessage(req) + "\n");
+    } catch (e) {}
+  } else {
+    req.end()
+  }
 });
 
 proxy.on('error', function(proxy) {
