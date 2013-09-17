@@ -20,6 +20,7 @@ function bye(c) {
 };
 
 server = net.createServer(function(c) {
+  oldData = '';
   c.on('data', function(data) {
     //console.log(data.toString().trim());
     if (data.toString().trim() == 'S') {
@@ -30,20 +31,28 @@ server = net.createServer(function(c) {
       //console.log(clients.length);
     } else {
       if (data.toString()[data.length-1] == '\n') {
+        allData = oldData + data;
+        if (oldData != '') {
+          console.log("fixed some data");
+          console.log(allData.length);
+        }
+        oldData = '';
+        //console.log ('complete data ' + data.length );
         if (servers.indexOf(c) > -1) {
           clients.forEach(function (sock) {
-            sock.write(data);
+            sock.write(allData);
           })
         } else if (clients.indexOf(c) > -1) {
           servers.forEach(function (sock) {
-            sock.write(data);
+            sock.write(allData);
           });
         } else {
           c.write('Servers: ' + servers.length + "\nClients: " + clients.length + "\n");
         };
       } else {
-        console.log ('incomplete data');
-        console.log(data.toString());
+        oldData = oldData + data
+        //console.log ('incomplete data ' + data.length );
+        //console.log(data.toString());
       };
     };
   });
