@@ -155,7 +155,9 @@ proxy.on('end', function (req) {
 });
 
 proxy.on('error', function(proxy) {
-  totalConnections -= 1;
+  //totalConnections -= 1;
+  console.log(proxy);
+  upstreamConnection.write(buildEndMessage(req) + "\n");
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
 });
