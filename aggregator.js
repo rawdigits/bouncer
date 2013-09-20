@@ -37,19 +37,10 @@ function bye(c) {
 };
 
 server = net.createServer(function(c) {
-  //oldData = '';
   c.oldData = '';
   c.on('data', function(data) {
-    if (data.toString().trim() == 'S') {
-      servers.push(c);
-    } else if (data.toString().trim() == 'C') {
-      clients.push(c);
-    } else if (data.toString().trim() == 'CO') {
-      commandOnlyClients.push(c);
-    } else {
+    if (data.length > 4) {
       data = data.toString()
-      //console.log(c.bytesRead)
-      //console.log(occurrences(data,"\n"))
       if (data[data.length-1] == '\n') {
         //assembles data into full size chunks
         allData = c.oldData + data;
@@ -71,8 +62,16 @@ server = net.createServer(function(c) {
         };
       } else {
         c.oldData = c.oldData + data
-        //console.log("Added data");
       };
+
+    } else if (data.toString().trim() == 'S') {
+      servers.push(c);
+    } else if (data.toString().trim() == 'C') {
+      clients.push(c);
+    } else if (data.toString().trim() == 'CO') {
+      commandOnlyClients.push(c);
+    } else {
+      data = data.toString()
     };
   });
   c.on('end', function() {
