@@ -46,6 +46,9 @@ class AggregatorConnector:
     return records
 
   def json_read(self):
-    #data = self.raw_read()
-    return [json.loads(line) for line in self.raw_read()]
-    #return [json.loads(line) for line in data]
+    #return [json.loads(line) for line in self.raw_read()]
+    data = self.raw_read()
+    try:
+      return [json.loads(line) for line in data]
+    except:
+      print data
