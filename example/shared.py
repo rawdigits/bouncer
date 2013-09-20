@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import json
 import socket
 import time
@@ -11,14 +9,19 @@ class AggregatorConnector:
     self.socket.connect(aggregator)
     self.socket.sendall(mode)
     self.previous_data = ''
+    self.records = 0
+    self.newlines = 0
 
   def write(self, data):
     self.socket.sendall(data + "\n")
 
   def raw_read(self):
     records = []
-    new_data = self.socket.recv(8)
+    new_data = self.socket.recv(8000)
     data = self.previous_data + new_data
+    self.newlines += data.count("\n")
+
+
     if data.count("\n") > 1:
       if data[-1] == '\n':
         for d in data.split("\n")[:-1]:
@@ -26,9 +29,9 @@ class AggregatorConnector:
         self.previous_data = ''
       else:
         good = data.split("\n")
-        for d in good[:-2]:
+        for d in good[:-1]:
           records.append(d)
-        self.previous_data = good[:-1]
+        self.previous_data = good[-1]
     elif data.count("\n") == 1:
       if data[-1] == '\n':
         records.append(data)
@@ -39,9 +42,10 @@ class AggregatorConnector:
         self.previous_data = good[1]
     else:
       self.previous_data = data
+    self.records += len(records)
     return records
 
   def json_read(self):
     #data = self.raw_read()
     return [json.loads(line) for line in self.raw_read()]
-
+    #return [json.loads(line) for line in data]

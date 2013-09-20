@@ -15,8 +15,8 @@ def process_data(data):
       url, params = data['url'].split('?')
     else:
        url, params = data['url'], ''
-    r.incr("%s" % (data['host']))
-    r.expire("%s" % (data['host']), 2)
+#    r.incr("%s" % (data['host']))
+#    r.expire("%s" % (data['host']), 2)
     r.sadd("uuid", "%s" % (data['uuid']))
   if data['type'] == 'end':
     r.srem("uuid", "%s" % (data['uuid']))
@@ -24,9 +24,6 @@ def process_data(data):
 
 
 agg = shared.AggregatorConnector()
-count = 0
 while True:
   for d in agg.json_read():
-    count += 1
     process_data(d)
-    print count
