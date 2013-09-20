@@ -41,14 +41,15 @@ function commandDo(cmd) {
   };
 }
 
-function buildRequestMessage(req, uuid) {
+function buildRequestMessage(req) {
   message = {};
+  message.time    = new Date().getTime();
   message.type    = "request";
   message.host    = req.socket.remoteAddress;
   message.url     = req.url;
   message.method  = req.method;
   message.headers = req.headers;
-  message.uuid    = uuid;
+  message.uuid    = req.uuid;
   return JSON.stringify(message);
 }
 
@@ -56,6 +57,15 @@ function buildConnectMessage(req) {
   message = {};
   message.type    = "connect";
   message.host    = req.remoteAddress;
+  return JSON.stringify(message);
+}
+
+function buildEndMessage(req) {
+  message = {};
+  message.time    = new Date().getTime();
+  message.type    = "end";
+  message.host    = req.remoteAddress;
+  message.uuid    = req.uuid;
   return JSON.stringify(message);
 }
 
@@ -111,9 +121,10 @@ proxyServer = http.createServer(function (req, res) {
     host: HTTP_SERVER,
     port: HTTP_PORT
     });
-    id = uuid.v4();
+    req.uuid = uuid.v4();
+    //id = uuid.v4();
     try {
-    upstreamConnection.write(buildRequestMessage(req, id) + "\n");
+    upstreamConnection.write(buildRequestMessage(req) + "\n");
     } catch (e) {}
   } else {
     req.connection.end();
@@ -138,14 +149,19 @@ proxyServer.on('connection', function (req, c, h) {
   }
 });
 
+proxy.on('end', function (req) {
+  //upstreamConnection.write(req.id + "ENDDDDDDDD\n");
+  upstreamConnection.write(buildEndMessage(req) + "\n");
+});
+
 proxy.on('error', function(proxy) {
   totalConnections -= 1;
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
 });
 
-proxy.on('end', function(proxy) {
-  totalConnections -= 1;
-  //c = connections.indexOf(proxy);
-  //connections.splice(c, 1);
-});
+//proxy.on('end', function(proxy) {
+//  totalConnections -= 1;
+//  //c = connections.indexOf(proxy);
+//  //connections.splice(c, 1);
+//});
