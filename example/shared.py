@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 import socket
 import time
 
@@ -51,4 +51,4 @@ class AggregatorConnector:
     try:
       return [json.loads(line) for line in data]
     except:
-      print data
+      return []

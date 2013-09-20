@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import json
 import socket
 import time
 import redis
 import shared
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
+blah = set()
 
 def process_data(data):
   #print data
@@ -17,9 +17,12 @@ def process_data(data):
        url, params = data['url'], ''
 #    r.incr("%s" % (data['host']))
 #    r.expire("%s" % (data['host']), 2)
-    r.sadd("uuid", "%s" % (data['uuid']))
+    #r.sadd("uuid", "%s" % (data['uuid']))
+    blah.add("%s" % (data['uuid']))
   if data['type'] == 'end':
-    r.srem("uuid", "%s" % (data['uuid']))
+    #blah.remove("%s" % (data['uuid']))
+    pass
+    #r.srem("uuid", "%s" % (data['uuid']))
     #r.delete("%s" % (data['uuid']))
 
 

@@ -7,7 +7,7 @@
 import shared
 import random
 import uuid
-import json
+import simplejson as json
 import sys
 import time
 
