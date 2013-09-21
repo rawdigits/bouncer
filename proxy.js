@@ -19,8 +19,8 @@ var assholes = {};
 var connections = [];
 var requests = [];
 var totalConnections = 0;
-var headerTimeout = 10000;
-var requestTimeout = 1000;
+var headerTimeout = 5000;
+var requestTimeout = 10000;
 
 process.setMaxListeners(0);
 
@@ -31,6 +31,9 @@ function commandDo(cmd) {
     cmd = cmd.slice(6).split("|")
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     assholes[cmd[0]] = timeToBlock;
+  } else if (/^rtimeout.*/.test(cmd)) {
+    console.log("changed timeout");
+    requestTimeout = parseInt(cmd.slice(9));
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete assholes[cmd];
@@ -102,12 +105,11 @@ setInterval(function() {
 setInterval(function() {
   requests.forEach(function (req) {
     if ((req.startTime + requestTimeout) < new Date().getTime()) {
-      console.log("timed out request");
       requests.splice(requests.indexOf(req),1);
       req.socket.end();
     };
   });
-  console.log(requests.length);
+  //console.log(requests.length);
 },250);
 
 setInterval(function() {
@@ -171,7 +173,6 @@ proxy.on('end', function (req) {
 
 proxy.on('error', function(proxy) {
   //totalConnections -= 1;
-  console.log(proxy);
   upstreamConnection.write(buildEndMessage(req) + "\n");
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
