@@ -168,12 +168,16 @@ proxyServer.on('connection', function (req, c, h) {
 proxy.on('end', function (req) {
   //upstreamConnection.write(req.id + "ENDDDDDDDD\n");
   requests.splice(requests.indexOf(req),1);
-  upstreamConnection.write(buildEndMessage(req) + "\n");
+  try {
+    upstreamConnection.write(buildEndMessage(req) + "\n");
+  } catch (e) {}
 });
 
 proxy.on('error', function(proxy) {
   //totalConnections -= 1;
+  try {
   upstreamConnection.write(buildEndMessage(req) + "\n");
+  } catch (e) {}
   //c = connections.indexOf(proxy);
   //connections.splice(c, 1);
 });
