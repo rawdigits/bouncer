@@ -20,7 +20,7 @@ class SecondBucketCounter:
         self.buckets.pop(0)
     all_connects = [item for sublist in self.buckets for item in sublist]
     self.previous_now = now
-    if all_connects.count(item) > 50:
+    if all_connects.count(item) > 150:
       command("BLOCK %s|10000\n" % item)
     #print len(self.buckets)
     #print len(all_connects)

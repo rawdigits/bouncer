@@ -17,9 +17,10 @@ var PROXY_PORT = process.argv[5];
 var upstreamConnection;
 var assholes = {};
 var connections = [];
-var reqs = [];
+var requests = [];
 var totalConnections = 0;
 var headerTimeout = 10000;
+var requestTimeout = 1000;
 
 process.setMaxListeners(0);
 
@@ -99,13 +100,24 @@ setInterval(function() {
 },1000);
 
 setInterval(function() {
-  reqs.forEach(function (req) {
+  requests.forEach(function (req) {
+    if ((req.startTime + requestTimeout) < new Date().getTime()) {
+      console.log("timed out request");
+      requests.splice(requests.indexOf(req),1);
+      req.socket.end();
+    };
+  });
+  console.log(requests.length);
+},250);
+
+setInterval(function() {
+  connections.forEach(function (req) {
     if ((req.startTime + headerTimeout) < new Date().getTime()) {
-      reqs.splice(reqs.indexOf(req),1);
+      connections.splice(connections.indexOf(req),1);
       req.end();
     };
   });
-  //console.log(reqs.length);
+  //console.log(connections.length);
 },1000);
 
 
@@ -133,14 +145,16 @@ proxyServer = http.createServer(function (req, res) {
 
 proxyServer.on('request', function (req, res) {
   //remove good requests from garbage collection
-  reqs.splice(reqs.indexOf(req),1);
+  req.startTime = new Date().getTime();
+  requests.push(req);
+  connections.splice(connections.indexOf(req),1);
 });
 
 proxyServer.on('connection', function (req, c, h) {
   //mark the start time vs slow laris
   if (checkBlacklist(req.remoteAddress)) {
     req.startTime = new Date().getTime();
-    reqs.push(req);
+    connections.push(req);
     try {
       upstreamConnection.write(buildConnectMessage(req) + "\n");
     } catch (e) {}
@@ -151,6 +165,7 @@ proxyServer.on('connection', function (req, c, h) {
 
 proxy.on('end', function (req) {
   //upstreamConnection.write(req.id + "ENDDDDDDDD\n");
+  requests.splice(requests.indexOf(req),1);
   upstreamConnection.write(buildEndMessage(req) + "\n");
 });
 
