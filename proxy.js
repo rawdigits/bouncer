@@ -32,8 +32,9 @@ function commandDo(cmd) {
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     assholes[cmd[0]] = timeToBlock;
   } else if (/^rtimeout.*/.test(cmd)) {
-    console.log("changed timeout");
     requestTimeout = parseInt(cmd.slice(9));
+  } else if (/^htimeout.*/.test(cmd)) {
+    headerTimeout = parseInt(cmd.slice(9));
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete assholes[cmd];
