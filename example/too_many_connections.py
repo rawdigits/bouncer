@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import json
+import shared
 import socket
 import time
 
@@ -20,7 +20,7 @@ class SecondBucketCounter:
         self.buckets.pop(0)
     all_connects = [item for sublist in self.buckets for item in sublist]
     self.previous_now = now
-    if all_connects.count(item) > 2:
+    if all_connects.count(item) > 50:
       command("BLOCK %s|10000\n" % item)
     #print len(self.buckets)
     #print len(all_connects)
@@ -35,24 +35,12 @@ def command(data):
   s.sendall(data + "\n")
 
 def processData(data):
-  if data.strip() != '':
-    #print data
-    j = json.loads(data)
-    if j['type'] == "connect":
-      blah.addItem(j['host'])
+    if data['type'] == "connect":
+      blah.addItem(data['host'])
       pass
-      #print "%s\n" % (j['host'])
 
+agg = shared.AggregatorConnector()
 
 while True:
-#  try:
-  data = s.recv(8000)
-  if data[0] == '{' and data[-1] == "\n":
-
-    if data.count("\n") > 1:
-      for d in data.split("\n"):
-        #print 'splitting'
-        processData(d)
-    else:
-      #print 'not split'
-      processData(data)
+  for d in agg.json_read():
+    processData(d)

@@ -27,13 +27,18 @@ class MockHttp:
     self.type = 'request'
   def request(self):
     return(json.dumps(self.__dict__))
+  def connect(self):
+    return(json.dumps({"host":self.host,"uuid":self.uuid,"type": "connect"}))
   def end(self):
     return(json.dumps({"host":self.host,"uuid":self.uuid,"type": "end"}))
 
 agg = shared.AggregatorConnector(mode="S")
+
+m = MockHttp()
+connect = str(m.connect())
 for i in range(0,int(sys.argv[1])):
-  m = MockHttp()
-  agg.write(str(m.request()))
+  agg.write(connect)
+#  agg.write(str(m.request()))
   #time.sleep(.1)
-  #agg.write(str(m.end()))
-  del(m)
+#  agg.write(str(m.end()))
+#  del(m)
