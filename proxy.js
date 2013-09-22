@@ -16,6 +16,7 @@ var PROXY_PORT = process.argv[5];
 //GLOBALs
 var upstreamConnection;
 var blacklist = {};
+var greylist = {};
 var connections = [];
 var requests = [];
 var disabledUrls = [];
@@ -32,6 +33,10 @@ function commandDo(cmd) {
     cmd = cmd.slice(6).split("|")
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     blacklist[cmd[0]] = timeToBlock;
+  } else if (/^grey.*/.test(cmd)) {
+    cmd = cmd.slice(5).split("|")
+    timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
+    greylist[cmd[0]] = timeToBlock;
   } else if (/^rtimeout.*/.test(cmd)) {
     requestTimeout = parseInt(cmd.slice(9));
   } else if (/^htimeout.*/.test(cmd)) {
@@ -92,6 +97,20 @@ function checkBlacklist(addr) {
   }
 }
 
+function checkGreyList(addr,url) {
+  if (addr in greylist) {
+    if (greylist[addr] > new Date().getTime()) {
+      return checkDisabledUrls(url)
+    } else {
+      delete greylist[addr];
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+
 function checkDisabledUrls(url) {
   url = url.split("?")[0]
   if (disabledUrls.indexOf(url) > -1) {
@@ -117,7 +136,6 @@ setInterval(function() {
 
 setInterval(function() {
   requests.forEach(function (req) {
-    //console.log(req.socket._bytesDispatched);
     if ((req.startTime + requestTimeout) < new Date().getTime()) {
       requests.splice(requests.indexOf(req),1);
       req.socket.end();
@@ -132,33 +150,27 @@ setInterval(function() {
       req.end();
     };
   });
-  //console.log(connections.length);
-},1000);
+},250);
 
 
 proxy = new httpProxy.RoutingProxy();
 //proxyServer = httpProxy.createServer(function (req, res, proxy) {
 proxyServer = http.createServer(function (req, res) {
   //this important bit helps against slowloris
-  //console.log(req);
-  req.setTimeout(12000);
-  if (checkBlacklist(req.socket.remoteAddress)) {
-    if (checkDisabledUrls(req.url)) {
-      totalConnections += 1;
-      proxy.proxyRequest(req, res, {
-      host: HTTP_SERVER,
-      port: HTTP_PORT
-      });
-      req.uuid = uuid.v4();
-      //id = uuid.v4();
-      try {
-      upstreamConnection.write(buildRequestMessage(req) + "\n");
-      } catch (e) {}
-    } else {
-      req.connection.write('disabled');
-      req.connection.end();
-    }
+  //req.setTimeout(12000);
+  if (checkBlacklist(req.socket.remoteAddress) && checkGreyList(req.socket.remoteAddress,req.url)) {
+    totalConnections += 1;
+    proxy.proxyRequest(req, res, {
+    host: HTTP_SERVER,
+    port: HTTP_PORT
+    });
+    req.uuid = uuid.v4();
+    //id = uuid.v4();
+    try {
+    upstreamConnection.write(buildRequestMessage(req) + "\n");
+    } catch (e) {}
   } else {
+    req.connection.write('disabled');
     req.connection.end();
   }
 }).listen(PROXY_PORT);
