@@ -15,7 +15,7 @@ var PROXY_PORT = process.argv[5];
 
 //GLOBALs
 var upstreamConnection;
-var assholes = {};
+var blacklist = {};
 var connections = [];
 var requests = [];
 var totalConnections = 0;
@@ -30,16 +30,16 @@ function commandDo(cmd) {
   if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
-    assholes[cmd[0]] = timeToBlock;
+    blacklist[cmd[0]] = timeToBlock;
   } else if (/^rtimeout.*/.test(cmd)) {
     requestTimeout = parseInt(cmd.slice(9));
   } else if (/^htimeout.*/.test(cmd)) {
     headerTimeout = parseInt(cmd.slice(9));
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
-    delete assholes[cmd];
+    delete blacklist[cmd];
   } else if (cmd == "flush") {
-    return assholes = {};
+    return blacklist = {};
   } else if (cmd == "kill") {
     cmd = cmd.slice(5)
     //connections
@@ -75,11 +75,11 @@ function buildEndMessage(req) {
 }
 
 function checkBlacklist(addr) {
-  if (addr in assholes) {
-    if (assholes[addr] > new Date().getTime()) {
+  if (addr in blacklist) {
+    if (blacklist[addr] > new Date().getTime()) {
       return false;
     } else {
-      delete assholes[addr];
+      delete blacklist[addr];
       return true;
     }
   } else {
