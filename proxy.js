@@ -18,9 +18,10 @@ var upstreamConnection;
 var blacklist = {};
 var connections = [];
 var requests = [];
+var disabledUrls = [];
 var totalConnections = 0;
 var headerTimeout = 5000;
-var requestTimeout = 10000;
+var requestTimeout = 120000;
 
 process.setMaxListeners(0);
 
@@ -35,6 +36,10 @@ function commandDo(cmd) {
     requestTimeout = parseInt(cmd.slice(9));
   } else if (/^htimeout.*/.test(cmd)) {
     headerTimeout = parseInt(cmd.slice(9));
+  } else if (/^durl.*/.test(cmd)) {
+    disabledUrls.push(cmd.slice(5));
+  } else if (/^eurl.*/.test(cmd)) {
+    disabledUrls.splice(disabledUrls.indexOf(cmd.slice(5)));
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete blacklist[cmd];
@@ -87,6 +92,12 @@ function checkBlacklist(addr) {
   }
 }
 
+function checkDisabledUrls(url) {
+  if (disabledUrls.indexOf(url) > -1) {
+    return false;
+  } else { return true; }
+}
+
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection || upstreamConnection == null) {
@@ -105,12 +116,12 @@ setInterval(function() {
 
 setInterval(function() {
   requests.forEach(function (req) {
+    //console.log(req.socket._bytesDispatched);
     if ((req.startTime + requestTimeout) < new Date().getTime()) {
       requests.splice(requests.indexOf(req),1);
       req.socket.end();
     };
   });
-  //console.log(requests.length);
 },250);
 
 setInterval(function() {
@@ -131,16 +142,21 @@ proxyServer = http.createServer(function (req, res) {
   //console.log(req);
   req.setTimeout(12000);
   if (checkBlacklist(req.socket.remoteAddress)) {
-    totalConnections += 1;
-    proxy.proxyRequest(req, res, {
-    host: HTTP_SERVER,
-    port: HTTP_PORT
-    });
-    req.uuid = uuid.v4();
-    //id = uuid.v4();
-    try {
-    upstreamConnection.write(buildRequestMessage(req) + "\n");
-    } catch (e) {}
+    if (checkDisabledUrls(req.url)) {
+      totalConnections += 1;
+      proxy.proxyRequest(req, res, {
+      host: HTTP_SERVER,
+      port: HTTP_PORT
+      });
+      req.uuid = uuid.v4();
+      //id = uuid.v4();
+      try {
+      upstreamConnection.write(buildRequestMessage(req) + "\n");
+      } catch (e) {}
+    } else {
+      req.connection.write('disabled');
+      req.connection.end();
+    }
   } else {
     req.connection.end();
   }
