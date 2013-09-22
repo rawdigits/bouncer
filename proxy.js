@@ -93,6 +93,7 @@ function checkBlacklist(addr) {
 }
 
 function checkDisabledUrls(url) {
+  url = url.split("?")[0]
   if (disabledUrls.indexOf(url) > -1) {
     return false;
   } else { return true; }
