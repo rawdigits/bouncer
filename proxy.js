@@ -97,7 +97,7 @@ function checkBlacklist(addr) {
   }
 }
 
-function checkGreyList(addr,url) {
+function checkGreylist(addr,url) {
   if (addr in greylist) {
     if (greylist[addr] > new Date().getTime()) {
       return checkDisabledUrls(url)
@@ -158,7 +158,7 @@ proxy = new httpProxy.RoutingProxy();
 proxyServer = http.createServer(function (req, res) {
   //this important bit helps against slowloris
   //req.setTimeout(12000);
-  if (checkBlacklist(req.socket.remoteAddress) && checkGreyList(req.socket.remoteAddress,req.url)) {
+  if (checkBlacklist(req.socket.remoteAddress) && checkGreylist(req.socket.remoteAddress,req.url)) {
     totalConnections += 1;
     proxy.proxyRequest(req, res, {
     host: HTTP_SERVER,
