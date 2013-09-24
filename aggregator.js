@@ -66,9 +66,7 @@ server = net.createServer(function(c) {
 
     } else if (data.toString().trim() == 'S') {
       servers.push(c);
-      console.log('server connected');
     } else if (data.toString().trim() == 'C') {
-      console.log('client connected');
       clients.push(c);
     } else if (data.toString().trim() == 'CO') {
       commandOnlyClients.push(c);
