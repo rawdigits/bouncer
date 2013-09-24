@@ -22,7 +22,7 @@ var connections = [];
 var requests = [];
 var disabledUrls = [];
 var totalConnections = 0;
-var headerTimeout = 120000;
+var headerTimeout = 1000;
 var requestTimeout = 120000;
 
 process.setMaxListeners(0);
