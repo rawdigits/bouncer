@@ -156,22 +156,16 @@ setInterval(function() {
 
 //TODO: make this work properly
 //Sweep newly blacklisted servers right away
-//setInterval(function() {
-//        console.log(requests.length);
-//  if (sweeplist.length > 0 && requests.length > 0) {
-//      count =  1;
-//      requests.forEach(function (req) {
-//        if (sweeplist.indexOf(req.socket.remoteAddress) > -1) {
-//          count += 1
-//          req.socket.end();
-//          requests.splice(requests.indexOf(req),1);
-//        } else {
-//          console.log(req.socket.remoteAddress)
-//        };
-//      });
-//      console.log('removed connections: ' + count);
-//  } return sweeplist = [];
-//} ,1000);
+setInterval(function() {
+  if (sweeplist.length > 0 && requests.length > 0) {
+      requests.forEach(function (req) {
+        if (sweeplist.indexOf(req.socket.remoteAddress) > -1) {
+          req.socket.end();
+          requests.splice(requests.indexOf(req),1);
+        };
+      });
+  } return sweeplist = [];
+} ,1000);
 
 proxy = new httpProxy.RoutingProxy();
 //proxyServer = httpProxy.createServer(function (req, res, proxy) {
