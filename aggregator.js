@@ -39,7 +39,7 @@ function bye(c) {
 server = net.createServer(function(c) {
   c.oldData = '';
   c.on('data', function(data) {
-    if (data.length > 4) {
+    if (data.length > 3) {
       data = data.toString()
       if (data[data.length-1] == '\n') {
         //assembles data into full size chunks
