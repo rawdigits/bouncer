@@ -16,12 +16,13 @@ var PROXY_PORT = process.argv[5];
 //GLOBALs
 var upstreamConnection;
 var blacklist = {};
+var sweeplist = [];
 var greylist = {};
 var connections = [];
 var requests = [];
 var disabledUrls = [];
 var totalConnections = 0;
-var headerTimeout = 5000;
+var headerTimeout = 120000;
 var requestTimeout = 120000;
 
 process.setMaxListeners(0);
@@ -32,6 +33,7 @@ function commandDo(cmd) {
   if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
     timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
+    sweeplist.push(cmd[0]);
     blacklist[cmd[0]] = timeToBlock;
   } else if (/^grey.*/.test(cmd)) {
     cmd = cmd.slice(5).split("|")
@@ -152,6 +154,24 @@ setInterval(function() {
   });
 },250);
 
+//TODO: make this work properly
+//Sweep newly blacklisted servers right away
+//setInterval(function() {
+//        console.log(requests.length);
+//  if (sweeplist.length > 0 && requests.length > 0) {
+//      count =  1;
+//      requests.forEach(function (req) {
+//        if (sweeplist.indexOf(req.socket.remoteAddress) > -1) {
+//          count += 1
+//          req.socket.end();
+//          requests.splice(requests.indexOf(req),1);
+//        } else {
+//          console.log(req.socket.remoteAddress)
+//        };
+//      });
+//      console.log('removed connections: ' + count);
+//  } return sweeplist = [];
+//} ,1000);
 
 proxy = new httpProxy.RoutingProxy();
 //proxyServer = httpProxy.createServer(function (req, res, proxy) {
