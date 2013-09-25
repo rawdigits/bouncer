@@ -44,9 +44,9 @@ function commandDo(cmd) {
   } else if (/^htimeout.*/.test(cmd)) {
     headerTimeout = parseInt(cmd.slice(9));
   } else if (/^durl.*/.test(cmd)) {
-    disabledUrls.push(cmd.slice(5));
+    disabledUrls.push(cmd.slice(5).replace(/\//g,''));
   } else if (/^eurl.*/.test(cmd)) {
-    disabledUrls.splice(disabledUrls.indexOf(cmd.slice(5)));
+    disabledUrls.splice(disabledUrls.indexOf(cmd.slice(5).replace(/\//g,'')));
   } else if (/^unblock.*/.test(cmd)) {
     cmd = cmd.slice(8)
     delete blacklist[cmd];
@@ -114,7 +114,7 @@ function checkGreylist(addr,url) {
 
 
 function checkDisabledUrls(url) {
-  url = url.split("?")[0]
+  url = url.split("?")[0].replace(/\//g,'')
   if (disabledUrls.indexOf(url) > -1) {
     return false;
   } else { return true; }
