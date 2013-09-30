@@ -22,10 +22,13 @@ class MockHttp:
   def __init__(self):
     self.uuid = str(uuid.uuid4())
     self.host = fakeIP()
+    self.time = int(time.time() * 1000)
     self.url = fake_paths[int(random.random() * len(fake_paths))]
-    self.method = 'GET'
+    #self.method = 'GET'
+    self.method = "GET\n"
     self.type = 'request'
   def request(self):
+    self.time = int(time.time() * 1000)
     return(json.dumps(self.__dict__))
   def connect(self):
     return(json.dumps({"host":self.host,"uuid":self.uuid,"type": "connect"}))
@@ -35,8 +38,8 @@ class MockHttp:
 agg = shared.AggregatorConnector(mode="S")
 
 m = MockHttp()
-connect = str(m.connect())
 for i in range(0,int(sys.argv[1])):
+  connect = str(m.request())
   agg.write(connect)
 #  agg.write(str(m.request()))
   #time.sleep(.1)

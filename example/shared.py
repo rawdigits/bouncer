@@ -2,6 +2,30 @@ import simplejson as json
 import socket
 import time
 
+class BatchCounter:
+
+  def __init__(self, seconds, ticks):
+    self.seconds = seconds
+    self.time = int(time.time())
+    self.count = 0
+    self.ticks = ticks
+
+  def check(self):
+    now = int(time.time())
+    self.count += 1
+    if self.count >= self.ticks:
+      self.count = 0
+      self.time = now
+      return True
+    elif (self.time + self.seconds) <= now:
+      self.count = 0
+      self.time = now
+      return True
+    else:
+      return False
+
+
+
 class AggregatorConnector:
 
   def __init__(self, aggregator=("127.0.0.1",5555), mode="C"):
