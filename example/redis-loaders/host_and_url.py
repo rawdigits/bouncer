@@ -17,6 +17,9 @@ def process_data(data):
     time = data['time']/1000
     TIME_LENGTH=10
 
+    #don't care about params
+    data['url'] = data['url'].split('?')[0]
+
     try:
       metric["%s-%s" % (time, data['host']+data['url'])] += 1
     except:

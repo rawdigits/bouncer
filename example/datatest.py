@@ -17,7 +17,7 @@ def fake_ips(count):
   for each in range(count):
     yield "%s.%s.%s.%s" % tuple([int(random.random() * 254) + 1 for x in range(4)])
 
-fake_hosts = [x for x in fake_ips(1000)]
+fake_hosts = [x for x in fake_ips(100000)]
 
 
 class MockHttp:
