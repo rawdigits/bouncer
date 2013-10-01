@@ -28,8 +28,8 @@ def process_data(data):
     if b.check():
       #using slices in these because it seems faster..
       for k,v in metric.items():
-        time, url = k[0:10], k[11:]
-        r.zincrby(time+"-urls", url, v)
+        time, useragent = k[0:10], k[11:]
+        r.zincrby(time+"-useragents", useragent, v)
 
       metric.clear()
 
