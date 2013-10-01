@@ -27,7 +27,7 @@ class MockHttp:
     #self.method = 'GET'
   def request(self):
     #this enables random ip
-    self.method = "GET\n"
+    self.method = "GET"
     self.type = 'request'
     self.uuid = str(uuid.uuid4())
     self.url = fake_paths[int(random.random() * len(fake_paths))]
