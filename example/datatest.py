@@ -13,21 +13,25 @@ import time
 
 fake_paths = ['/blog','/buystuff','/somepath']
 
-def fakeIP():
-  return "%s.%s.%s.%s" % tuple([int(random.random() * 254) + 1 for x in range(4)])
+def fake_ips(count):
+  for each in range(count):
+    yield "%s.%s.%s.%s" % tuple([int(random.random() * 254) + 1 for x in range(4)])
 
+fake_hosts = [x for x in fake_ips(10000)]
 
 
 class MockHttp:
   def __init__(self):
-    self.uuid = str(uuid.uuid4())
-    self.host = fakeIP()
+#    self.host = fake_ips()
     self.time = int(time.time() * 1000)
-    self.url = fake_paths[int(random.random() * len(fake_paths))]
     #self.method = 'GET'
+  def request(self):
+    #this enables random ip
     self.method = "GET\n"
     self.type = 'request'
-  def request(self):
+    self.uuid = str(uuid.uuid4())
+    self.url = fake_paths[int(random.random() * len(fake_paths))]
+    self.host = fake_hosts[int(random.random() * len(fake_hosts))]
     self.time = int(time.time() * 1000)
     return(json.dumps(self.__dict__))
   def connect(self):
@@ -41,6 +45,7 @@ m = MockHttp()
 for i in range(0,int(sys.argv[1])):
   connect = str(m.request())
   agg.write(connect)
+  time.sleep(.0001)
 #  agg.write(str(m.request()))
   #time.sleep(.1)
 #  agg.write(str(m.end()))
