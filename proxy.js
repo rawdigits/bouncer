@@ -5,12 +5,17 @@ http.globalAgent.maxSockets = 100000
 var httpProxy = require('http-proxy');
 var uuid = require('uuid');
 var net = require('net');
+var argv = require('optimist')
+  .usage('Usage: $0 -o [loghost] -t [target_host] -p [target_port] -l [proxy_listen_port]')
+  .default('o', 'localhost')
+  .demand(['t','p','l'])
+  .argv;
 
 //CONSTANTS
-var UPSTREAM_LOGSERVER = process.argv[2];
-var HTTP_SERVER = process.argv[3];
-var HTTP_PORT = process.argv[4];
-var PROXY_PORT = process.argv[5];
+var UPSTREAM_LOGSERVER = argv.o;
+var HTTP_SERVER = argv.t;
+var HTTP_PORT = argv.p
+var PROXY_PORT = argv.l
 //#TODO: add support for behind proxy
 
 //GLOBALs
