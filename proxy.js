@@ -6,11 +6,13 @@ var httpProxy = require('http-proxy');
 var uuid = require('uuid');
 var net = require('net');
 var argv = require('optimist')
-  .usage('Usage: $0 -o [loghost] -t [target_host] -p [target_port] -l [proxy_listen_port]')
+  .usage('Usage: $0 -o [loghost] -P [logport] -t [target_host] -p [target_port] -l [proxy_listen_port]')
   .default('o', 'localhost')
+  .default('P', 5555)
   .demand(['t','p','l'])
   .argv;
 
+console.log("DONT FORGET TO RAISE ULIMIT");
 //CONSTANTS
 var UPSTREAM_LOGSERVER = argv.o;
 var HTTP_SERVER = argv.t;
@@ -128,7 +130,7 @@ function checkDisabledUrls(url) {
 //This connects to the aggregation server and accepts upstream commands.
 setInterval(function() {
   if (!upstreamConnection || upstreamConnection == null) {
-    upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: 5555})
+    upstreamConnection = net.connect({host: UPSTREAM_LOGSERVER, port: argv.P})
     //connect to aggregator in "server" mode
     upstreamConnection.write('S');
     upstreamConnection.on('data', function(data) {

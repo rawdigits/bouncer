@@ -1,30 +1,14 @@
 #!/usr/bin/node
 
 var net = require('net');
+var argv = require('optimist')
+  .usage('Usage: $0 -l [aggregator_listen_port]')
+  .default('l', '5555')
+  .argv;
 
 clients = []
 servers = []
 commandOnlyClients = []
-
-/** Function count the occurrences of substring in a string;
- * @param {String} string   Required. The string;
- * @param {String} subString    Required. The string to search for;
- * @param {Boolean} allowOverlapping    Optional. Default: false;
- */
-function occurrences(string, subString, allowOverlapping){
-
-    string+=""; subString+="";
-    if(subString.length<=0) return string.length+1;
-
-    var n=0, pos=0;
-    var step=(allowOverlapping)?(1):(subString.length);
-
-    while(true){
-        pos=string.indexOf(subString,pos);
-        if(pos>=0){ n++; pos+=step; } else break;
-    }
-    return(n);
-}
 
 function bye(c) {
  if (clients.indexOf(c) > -1) {
@@ -84,4 +68,4 @@ server = net.createServer(function(c) {
 
 });
 
-server.listen(5555);
+server.listen(argv.l);
