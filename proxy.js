@@ -29,15 +29,15 @@ process.setMaxListeners(0);
 
 //Incoming commands from upstream server
 function commandDo(cmd) {
-  cmd = cmd.toString().trim().toLowerCase();
+  var cmd = cmd.toString().trim().toLowerCase();
   if (/^block.*/.test(cmd)) {
     cmd = cmd.slice(6).split("|")
-    timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
+    var timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     sweeplist.push(cmd[0]);
     blacklist[cmd[0]] = timeToBlock;
   } else if (/^grey.*/.test(cmd)) {
     cmd = cmd.slice(5).split("|")
-    timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
+    var timeToBlock =  new Date().getTime() + parseInt(cmd[1]);
     greylist[cmd[0]] = timeToBlock;
   } else if (/^rtimeout.*/.test(cmd)) {
     requestTimeout = parseInt(cmd.slice(9));
@@ -59,7 +59,7 @@ function commandDo(cmd) {
 }
 
 function buildRequestMessage(req) {
-  message = {};
+  var message = {};
   message.time    = new Date().getTime();
   message.type    = "request";
   message.host    = req.socket.remoteAddress;
@@ -71,14 +71,14 @@ function buildRequestMessage(req) {
 }
 
 function buildConnectMessage(req) {
-  message = {};
+  var message = {};
   message.type    = "connect";
   message.host    = req.remoteAddress;
   return JSON.stringify(message);
 }
 
 function buildEndMessage(req) {
-  message = {};
+  var message = {};
   message.time    = new Date().getTime();
   message.type    = "end";
   message.host    = req.remoteAddress;
@@ -114,7 +114,7 @@ function checkGreylist(addr,url) {
 
 
 function checkDisabledUrls(url) {
-  url = url.split("?")[0].replace(/\//g,'')
+  var url = url.split("?")[0].replace(/\//g,'')
   if (disabledUrls.indexOf(url) > -1) {
     return false;
   } else { return true; }
@@ -174,9 +174,9 @@ setInterval(function() {
   } return sweeplist = [];
 } ,1000);
 
-proxy = new httpProxy.RoutingProxy();
+var proxy = new httpProxy.RoutingProxy();
 //proxyServer = httpProxy.createServer(function (req, res, proxy) {
-proxyServer = http.createServer(function (req, res) {
+var proxyServer = http.createServer(function (req, res) {
   //this important bit helps against slowloris
   //req.setTimeout(12000);
   if (checkBlacklist(req.socket.remoteAddress) && checkGreylist(req.socket.remoteAddress,req.url)) {
