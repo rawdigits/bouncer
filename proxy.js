@@ -61,7 +61,6 @@ function commandDo(cmd) {
     return blacklist = {};
   } else if (cmd == "kill") {
     cmd = cmd.slice(5)
-    //connections
   };
 }
 
@@ -150,6 +149,7 @@ setInterval(function() {
   } catch (e) {}
 },2000);
 
+//Destroys connections that hit the hard requestTimeout
 setInterval(function() {
   requests.forEach(function (req) {
     if ((req.startTime + requestTimeout) < new Date().getTime()) {
@@ -159,6 +159,7 @@ setInterval(function() {
   });
 },250);
 
+//Destroys connections that hit the hard headerTimeout
 setInterval(function() {
   connections.forEach(function (req) {
     if ((req.startTime + headerTimeout) < new Date().getTime()) {
@@ -168,7 +169,6 @@ setInterval(function() {
   });
 },250);
 
-//TODO: make this work properly
 //Sweep newly blacklisted servers right away
 setInterval(function() {
   if (sweeplist.length > 0 && requests.length > 0) {
@@ -182,10 +182,21 @@ setInterval(function() {
 } ,1000);
 
 var proxy = new httpProxy.RoutingProxy();
-//proxyServer = httpProxy.createServer(function (req, res, proxy) {
+
+proxy.on('end', function (req) {
+  requests.splice(requests.indexOf(req),1);
+  try {
+    upstreamConnection.write(buildEndMessage(req) + "\n");
+  } catch (e) {}
+});
+
+proxy.on('error', function(proxy) {
+  try {
+  upstreamConnection.write(buildEndMessage(req) + "\n");
+  } catch (e) {}
+});
+
 var proxyServer = http.createServer(function (req, res) {
-  //this important bit helps against slowloris
-  //req.setTimeout(12000);
   if (checkBlacklist(req.socket.remoteAddress) && checkGreylist(req.socket.remoteAddress,req.url)) {
     totalConnections += 1;
     proxy.proxyRequest(req, res, {
@@ -193,7 +204,6 @@ var proxyServer = http.createServer(function (req, res) {
     port: HTTP_PORT
     });
     req.uuid = uuid.v4();
-    //id = uuid.v4();
     try {
     upstreamConnection.write(buildRequestMessage(req) + "\n");
     } catch (e) {}
@@ -211,7 +221,7 @@ proxyServer.on('request', function (req, res) {
 });
 
 proxyServer.on('connection', function (req, c, h) {
-  //mark the start time vs slow laris
+  //mark the start time vs slow loris
   if (checkBlacklist(req.remoteAddress)) {
     req.startTime = new Date().getTime();
     connections.push(req);
@@ -223,25 +233,3 @@ proxyServer.on('connection', function (req, c, h) {
   }
 });
 
-proxy.on('end', function (req) {
-  //upstreamConnection.write(req.id + "ENDDDDDDDD\n");
-  requests.splice(requests.indexOf(req),1);
-  try {
-    upstreamConnection.write(buildEndMessage(req) + "\n");
-  } catch (e) {}
-});
-
-proxy.on('error', function(proxy) {
-  //totalConnections -= 1;
-  try {
-  upstreamConnection.write(buildEndMessage(req) + "\n");
-  } catch (e) {}
-  //c = connections.indexOf(proxy);
-  //connections.splice(c, 1);
-});
-
-//proxy.on('end', function(proxy) {
-//  totalConnections -= 1;
-//  //c = connections.indexOf(proxy);
-//  //connections.splice(c, 1);
-//});
