@@ -1,7 +1,7 @@
 #!/usr/bin/node
 
 var http = require('http');
-http.globalAgent.maxSockets = 100000
+http.globalAgent.maxSockets = 200000
 var httpProxy = require('http-proxy');
 var uuid = require('uuid');
 var net = require('net');
@@ -211,6 +211,7 @@ var proxyServer = http.createServer(function (req, res) {
     req.connection.write('disabled');
     req.connection.end();
   }
+  //TODO: maybe notify that proxy request has been forwarded here
 }).listen(PROXY_PORT);
 
 proxyServer.on('request', function (req, res) {
