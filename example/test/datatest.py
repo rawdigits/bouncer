@@ -11,13 +11,16 @@ import simplejson as json
 import sys
 import time
 
+total_fake_ips = sys.argv[1]
+total_requests = sys.argv[2]
+
 fake_paths = ['/blog','/buystuff','/somepath']
 
 def fake_ips(count):
   for each in range(count):
     yield "%s.%s.%s.%s" % tuple([int(random.random() * 254) + 1 for x in range(4)])
 
-fake_hosts = [x for x in fake_ips(100000)]
+fake_hosts = [x for x in fake_ips(total_fake_ips)]
 
 
 class MockHttp:
@@ -43,7 +46,7 @@ class MockHttp:
 agg = shared.AggregatorConnector(mode="S")
 
 m = MockHttp()
-for i in range(0,int(sys.argv[1])):
+for i in range(0,int(total_requests)):
   request = str(m.request())
   agg.write(request)
   end = str(m.end())
