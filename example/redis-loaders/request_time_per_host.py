@@ -30,10 +30,10 @@ def process_data(data):
     # assign these inside the if because there are tons of connect events..
     request_time = data['time']
     uuid = data['uuid']
-    print metric
+    #print metric
     if metric.has_key(uuid):
       metric2[metric[uuid]["host"]] = request_time - metric[uuid]["time"]
-      print metric2[metric[uuid]["host"]]
+      #print metric2[metric[uuid]["host"]]
       metric.pop(uuid)
 
   if b.check():
