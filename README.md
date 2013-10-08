@@ -1,3 +1,5 @@
+# The documentation is sparse, will improve this next:
+
 ## Proxy
 
 Usage: /usr/bin/node ./proxy.js -o [loghost] -P [logport] -t [target_host] -p [target_port] -l [proxy_listen_port]
@@ -12,6 +14,7 @@ Options:
 ## Aggregator
 
 
+Usage /usr/bin/node ./aggregator.js  -l [listen_port]
 
 
 Dependencies:
