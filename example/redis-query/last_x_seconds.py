@@ -4,15 +4,15 @@ import time
 import redis
 import sys
 
-minutes_ago = int(sys.argv[1])
+seconds_ago = int(sys.argv[1])
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 now = int(time.time())
-hosturls = ["%s-hosturls" % x for x in range(now-minutes_ago, now)]
-hosts = ["%s-hosts" % x for x in range(now-minutes_ago, now)]
-urls = ["%s-urls" % x for x in range(now-minutes_ago, now)]
-seconds = ["%s" % x for x in range(now-minutes_ago, now)]
+hosturls = ["%s-hosturls" % x for x in range(now-seconds_ago, now)]
+hosts = ["%s-hosts" % x for x in range(now-seconds_ago, now)]
+urls = ["%s-urls" % x for x in range(now-seconds_ago, now)]
+seconds = ["%s" % x for x in range(now-seconds_ago, now)]
 
 #for second in range(now-60, now):
 r.zunionstore('hosturls',hosturls)
