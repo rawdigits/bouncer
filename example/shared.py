@@ -97,9 +97,10 @@ class SecondBucketCounter:
     if len(self.buckets) > self.seconds:
       self.buckets = self.buckets[-self.seconds:]
     self.previous_now = now
-  def checkItems(self, item)
+  def checkItem(self, item, threshold):
     all_connects = [item for sublist in self.buckets for item in sublist]
-    if all_connects.count(item) > 150:
-      command("BLOCK %s|10000\n" % item)
-    print self.buckets
+    if all_connects.count(item) > threshold:
+      return True
+    else:
+      return False
 

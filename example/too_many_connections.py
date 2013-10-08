@@ -6,17 +6,12 @@ import time
 
 blah = shared.SecondBucketCounter(5)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('127.0.0.1',5555))
-s.sendall("C")
-
-def command(data):
-  s.sendall(data + "\n")
-
 def processData(data):
-    if data['type'] == "connect":
-      blah.addItem(data['host'])
-      pass
+  if data['type'] == "connect":
+    host = data['host']
+    blah.addItem(host)
+    if blah.checkItem(host, 75):
+      agg.write("BLOCK %s|10000" % host)
 
 agg = shared.AggregatorConnector()
 
