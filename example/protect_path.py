@@ -15,8 +15,8 @@ def processData(data):
       if data['url'] == PROTECT_URL:
         host = data['host']
         blah.addItem(host)
-        if blah.checkItem(host):
-          agg.write("grey %s|60000" % item)
+        if blah.checkItem(host, 2):
+          agg.write("grey %s|60000" % host)
 
 
 

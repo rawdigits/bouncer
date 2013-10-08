@@ -18,6 +18,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 now = int(time.time())
 hosturls = ["%s-hosturls" % x for x in range(start_date, end_date)]
+print hosturls
 hosts = ["%s-hosts" % x for x in range(start_date, end_date)]
 urls = ["%s-urls" % x for x in range(start_date, end_date)]
 useragents = ["%s-useragents" % x for x in range(start_date, end_date)]

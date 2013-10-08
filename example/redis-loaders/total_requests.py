@@ -27,7 +27,7 @@ def process_data(data):
     if b.check():
       #using slices in these because it seems faster..
       for k,v in metric.items():
-        r.incrby(k, v)
+        r.hincrby(k, v)
 
       metric.clear()
 
