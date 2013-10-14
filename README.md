@@ -65,3 +65,7 @@ Sending commands to proxy:
 `grey 10.1.1.2|10000` Add 10.1.1.2 to greylist for 10 seconds  
 `flush` Clear blacklist  
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rawdigits/bouncer/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
