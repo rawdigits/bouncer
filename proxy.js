@@ -59,8 +59,8 @@ function commandDo(cmd) {
     delete blacklist[cmd];
   } else if (cmd == "flush") {
     return blacklist = {};
-  } else if (cmd == "kill") {
-    cmd = cmd.slice(5)
+  } else if (cmd == "nuclear") {
+    nuclear;
   };
 }
 
@@ -180,6 +180,19 @@ setInterval(function() {
       });
   } return sweeplist = [];
 } ,1000);
+
+//Nuclear option - kills all connection s immediately (caution)
+//TODO: this should be split into generic functions
+function nuclear() {
+  requests.forEach(function (req) {
+    req.socket.end();
+    requests.splice(requests.indexOf(req),1);
+  });
+  connections.forEach(function (req) {
+    connections.splice(connections.indexOf(req),1);
+    req.end();
+  });
+}
 
 var proxy = new httpProxy.RoutingProxy();
 

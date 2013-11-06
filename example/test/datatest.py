@@ -11,8 +11,8 @@ import simplejson as json
 import sys
 import time
 
-total_fake_ips = sys.argv[1]
-total_requests = sys.argv[2]
+total_fake_ips = int(sys.argv[1])
+total_requests = int(sys.argv[2])
 
 fake_paths = ['/blog','/buystuff','/somepath']
 
