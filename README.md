@@ -1,3 +1,5 @@
+[Presentation video from ToorCon San Diego](https://vimeo.com/77450055)
+
 [Link to SecTor 2013 Presentation](https://dl.dropboxusercontent.com/u/566560/Running%20at%2099%20percent.pdf)
 
 [Slow/App DoS information and resources](https://gist.github.com/rawdigits/6868177/edit)
