@@ -1,3 +1,5 @@
+##NOTE: currently requires node-http-proxy 0.10.4 because a method I use was removed in 1.x
+
 [Presentation video from ToorCon San Diego](https://vimeo.com/77450055)
 
 [Link to SecTor 2013 Presentation](https://dl.dropboxusercontent.com/u/566560/Running%20at%2099%20percent.pdf)
@@ -7,7 +9,7 @@
 #### (The documentation is sparse, will improve this next)
 
 ###Dependencies:
-npm install http-proxy  
+npm install http-proxy@0.10.4  
 npm install uuid  
 npm install optimist  
 ###Optional:
